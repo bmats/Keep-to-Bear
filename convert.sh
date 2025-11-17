@@ -18,5 +18,9 @@ for file in "$@"
 do
   echo "Parsing "${file}
   sed -i '' -e 's|<span class="label-name">|<span class="label-name">#|g' "${file}"
+  # Convert unchecked checkboxes (&#9744; = ☐) to Markdown syntax
+  sed -i '' -e 's|<span class="bullet">&#9744;</span>|[ ]|g' "${file}"
+  # Convert checked checkboxes (&#9745; = ☑) to Markdown syntax
+  sed -i '' -e 's|<span class="bullet">&#9745;</span>|[x]|g' "${file}"
   python3 ${DIR}/set_time.py "${file}"
 done
