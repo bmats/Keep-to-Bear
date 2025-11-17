@@ -24,5 +24,7 @@ do
   sed -i '' -e 's|<span class="bullet">&#9745;</span>|[x]|g' "${file}"
   # Add #keep-import/archived tag for archived notes
   sed -i '' -e 's|<span class="archived" title="Note archived"></span>|<span class="archived" title="Note archived">#from-keep/archived</span>|g' "${file}"
+  # Embed images as base64 data URIs
+  python3 ${DIR}/embed_images.py "${file}"
   python3 ${DIR}/set_time.py "${file}"
 done
