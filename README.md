@@ -7,11 +7,10 @@ I couldn't find a solution that was good enough for my purposes, so this is what
 2. In terminal navigate to the Takeout/Keep/ folder & run this. It adds hashtags to your labels so that Bear will recognise them.
 
 ```bash
-pip3 install parsedatetime
 /path/to/Keep-to-Bear/convert.sh *.html
 ```
 
-The script changes the creation/modification dates of the downloaded notes so their date/times will get imported into Bear.
+The script changes the creation/modification dates of the downloaded notes (using the timestamps from the JSON files) so their date/times will get imported into Bear with the correct timezone.
 
 3. Then import all the html files into Bear (File -> Import Notes), checking "Keep original dates" and "Use file name as title".
 

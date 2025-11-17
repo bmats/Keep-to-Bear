@@ -1,21 +1,25 @@
 import os
-import re
 import sys
-import time
-import datetime
+import json
 
-import parsedatetime as pdt
+def set_file_date(html_file):
+	# Replace .html with .json to get the corresponding JSON file
+	json_file = html_file.replace('.html', '.json')
 
-cal = pdt.Calendar()
+	if not os.path.exists(json_file):
+		print(f"Warning: JSON file not found for {html_file}, skipping")
+		return
 
-def set_file_date(file):
-	with open(file) as f:
-		text = f.read()
-		datestr = re.search(r'<\/div>\n[^<>/\"=\n]*(?=</div>)', text).group(0)
-		datestr = datestr.splitlines()[1]
-		date, _ = cal.parse(datestr)
-		date = time.mktime(date)
-	os.utime(file, (date, date))
+	with open(json_file) as f:
+		data = json.load(f)
+		# Use userEditedTimestampUsec (last edited time) as the file timestamp
+		# This is in microseconds, so divide by 1,000,000 to get seconds
+		timestamp_usec = data.get('userEditedTimestampUsec', data.get('createdTimestampUsec'))
+		if timestamp_usec:
+			timestamp = timestamp_usec / 1000000.0
+			os.utime(html_file, (timestamp, timestamp))
+		else:
+			print(f"Warning: No timestamp found in {json_file}")
 
 for arg in sys.argv[1:]:
 	if not ".html" in arg:
