@@ -14,7 +14,9 @@ def set_file_date(html_file):
 		data = json.load(f)
 		# Use userEditedTimestampUsec (last edited time) as the file timestamp
 		# This is in microseconds, so divide by 1,000,000 to get seconds
-		timestamp_usec = data.get('userEditedTimestampUsec', data.get('createdTimestampUsec'))
+		edited_timestamp_usec = data.get('userEditedTimestampUsec', 0)
+		created_timestamp_usec = data.get('createdTimestampUsec', 0)
+		timestamp_usec = max(edited_timestamp_usec, created_timestamp_usec)
 		if timestamp_usec:
 			timestamp = timestamp_usec / 1000000.0
 			os.utime(html_file, (timestamp, timestamp))
