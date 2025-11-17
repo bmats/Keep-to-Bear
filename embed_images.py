@@ -62,6 +62,23 @@ def embed_images_in_html(html_file):
 	# Replace all image sources
 	html_content = re.sub(img_pattern, replace_image, html_content)
 
+	# Remove ul/li wrappers from attachments section only
+	# Match the entire attachments div and process it
+	attachments_pattern = r'(<div class="attachments">)<ul>(.*?)</ul>(</div>)'
+
+	def clean_attachments(match):
+		opening = match.group(1)
+		content = match.group(2)
+		closing = match.group(3)
+
+		# Remove <li> and </li> tags, add newlines between images
+		content = re.sub(r'<li>', '', content)
+		content = re.sub(r'</li>\s*', '<br>\n', content)
+
+		return opening + content + closing
+
+	html_content = re.sub(attachments_pattern, clean_attachments, html_content, flags=re.DOTALL)
+
 	# Write back to file
 	with open(html_file, 'w') as f:
 		f.write(html_content)
