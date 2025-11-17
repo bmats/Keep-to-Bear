@@ -22,5 +22,7 @@ do
   sed -i '' -e 's|<span class="bullet">&#9744;</span>|[ ]|g' "${file}"
   # Convert checked checkboxes (&#9745; = ☑) to Markdown syntax
   sed -i '' -e 's|<span class="bullet">&#9745;</span>|[x]|g' "${file}"
+  # Add #keep-import/archived tag for archived notes
+  sed -i '' -e 's|<span class="archived" title="Note archived"></span>|<span class="archived" title="Note archived">#from-keep/archived</span>|g' "${file}"
   python3 ${DIR}/set_time.py "${file}"
 done
