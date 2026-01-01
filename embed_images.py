@@ -79,6 +79,36 @@ def embed_images_in_html(html_file):
 
 	html_content = re.sub(attachments_pattern, clean_attachments, html_content, flags=re.DOTALL)
 
+	# Extract heading div and remove timestamp
+	heading_pattern = r'(<div class="heading">.*?</div>\s*)(.*?)(</div>)'
+	heading_match = re.search(heading_pattern, html_content, flags=re.DOTALL)
+	heading_div = ''
+
+	if heading_match:
+		# Reconstruct heading without timestamp text
+		heading_div = heading_match.group(1) + heading_match.group(3)
+
+		# Remove heading from its current position
+		html_content = re.sub(heading_pattern, '', html_content, flags=re.DOTALL, count=1)
+
+		# Check if there's a title div, if not, create one with <br>
+		if '<div class="title">' not in html_content:
+			title_div = '<div class="title"><h1>&nbsp;</h1></div>'
+		else:
+			# Extract existing title div
+			title_pattern = r'<div class="title">.*?</div>'
+			title_match = re.search(title_pattern, html_content, flags=re.DOTALL)
+			if title_match:
+				title_div = title_match.group(0)
+				# Remove title from its current position
+				html_content = re.sub(title_pattern, '', html_content, flags=re.DOTALL, count=1)
+
+		# Insert title div, then heading div, before content div
+		html_content = re.sub(r'(<div class="content">)', title_div + r'\n\n' + heading_div + r'\n\n\1', html_content, count=1)
+
+	# Add #keep-import tag at the bottom of the HTML body
+	html_content = re.sub(r'(</body>)', r'<br>#from-keep\n\1', html_content)
+
 	# Write back to file
 	with open(html_file, 'w') as f:
 		f.write(html_content)
